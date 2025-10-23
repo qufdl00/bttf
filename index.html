@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    overflow: hidden;
+    height: 100vh;
+    background: url("bttf.jpeg") center/cover no-repeat;
+    position: relative;
+  }
+
+  video {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%) perspective(1200px) rotateX(25deg);
+    width: 100vw;
+    height: 190vh;
+    object-fit: cover;
+    filter: brightness(1.6) contrast(1.7) saturate(2.6) hue-rotate(260deg);
+    opacity: 0.95;
+    z-index: 2;
+    mix-blend-mode: screen;
+    mask-image: linear-gradient(to top, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%);
+    -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%);
+  }
+
+  .beam {
+    position: absolute;
+    height: 14px;
+    width: 1600px;
+    opacity: 0.95;
+    filter: blur(12px) brightness(4);
+    animation: shoot 0.8s linear forwards;
+    z-index: 5;
+    pointer-events: none;
+  }
+
+  @keyframes shoot {
+    0% { transform: translateX(0) scaleX(0.1); opacity: 1; }
+    100% { transform: translateX(250vw) scaleX(3); opacity: 0; }
+  }
+
+  .meteor {
+    position: absolute;
+    width: 3px;
+    height: 120px;
+    background: linear-gradient(180deg, white, transparent);
+    opacity: 0.8;
+    filter: blur(3px);
+    animation: fall 1.5s linear forwards;
+    z-index: 6;
+    pointer-events: none;
+  }
+
+  @keyframes fall {
+    0% { transform: translateY(-100px) translateX(0); opacity: 1; }
+    100% { transform: translateY(130vh) translateX(400px); opacity: 0; }
+  }
+
+  .lensflare {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(255,255,255,0.9), rgba(100,0,255,0.4), transparent);
+    mix-blend-mode: screen;
+    filter: blur(10px) brightness(2.5);
+    animation: flare 2.5s ease-in-out infinite;
+    z-index: 7;
+    pointer-events: none;
+  }
+
+  @keyframes flare {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.8); }
+  }
+</style>
+</head>
+<body>
+  <video src="bttf.mp4" autoplay muted loop></video>
+
+  <script>
+  // 광선 (빨주노초파남보 + 민트 계열 전부)
+  setInterval(() => {
+    const beam = document.createElement("div");
+    beam.className = "beam";
+    beam.style.top = Math.random() * window.innerHeight + "px";
+    beam.style.left = Math.random() > 0.5 ? "-1200px" : "100vw";
+
+    // 🔥 무지개 계열 + 랜덤 밝기
+    const hue = Math.floor(Math.random() * 360); // 전체 색상 범위
+    const sat = 100;
+    const light = 65 + Math.random() * 15;
+    const color1 = `hsl(${hue}, ${sat}%, ${light}%)`;
+    const color2 = `hsl(${(hue + 40) % 360}, ${sat}%, ${light + 10}%)`;
+
+    beam.style.background = `linear-gradient(90deg, transparent, ${color1}, ${color2}, transparent)`;
+    beam.style.height = Math.random() * 14 + 6 + "px";
+    document.body.appendChild(beam);
+    setTimeout(() => beam.remove(), 1000);
+  }, 40);
+
+  // 별똥별
+  setInterval(() => {
+    const m = document.createElement("div");
+    m.className = "meteor";
+    m.style.left = Math.random() * window.innerWidth + "px";
+    m.style.animationDuration = 0.8 + Math.random() * 1 + "s";
+    document.body.appendChild(m);
+    setTimeout(() => m.remove(), 1800);
+  }, 300);
+
+  // 렌즈플레어
+  setInterval(() => {
+    const lf = document.createElement("div");
+    lf.className = "lensflare";
+    lf.style.top = Math.random() * window.innerHeight + "px";
+    lf.style.left = Math.random() * window.innerWidth + "px";
+    const r = Math.floor(100 + Math.random() * 155);
+    const g = Math.floor(100 + Math.random() * 155);
+    const b = Math.floor(100 + Math.random() * 155);
+    lf.style.background = `radial-gradient(circle, rgba(255,255,255,0.9), rgba(${r},${g},${b},0.5), transparent)`;
+    document.body.appendChild(lf);
+    setTimeout(() => lf.remove(), 2500);
+  }, 800);
+
+
+
+  setInterval(() => {
+  const star = document.createElement("div");
+  const size = 14 + Math.random() * 16; // 14~30px
+  star.style.width = star.style.height = size + "px";
+
+  // 5각 별 모양
+  star.style.clipPath = "polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)";
+  star.style.background = `hsl(${Math.random() * 360}, 90%, 70%)`;
+  
+  star.style.position = "absolute";
+  star.style.top = Math.random() * window.innerHeight + "px";
+  star.style.left = Math.random() * window.innerWidth + "px";
+  star.style.zIndex = 1; // 다른 효과 위로 올라가지 않게 낮춤
+  star.style.pointerEvents = "none";
+  
+  document.body.appendChild(star);
+  
+  setTimeout(() => star.remove(), 4000 + Math.random() * 2000);
+}, 150); // 이전 50ms → 150ms로 생성 간격 느리게
+
+  const video = document.querySelector("video");
+
+document.body.addEventListener("click", () => {
+  if (video.muted) {
+    video.muted = false;  // 음소거 해제
+    video.play();         // 재생 시도 (브라우저 정책 대비)
+  }
+});
+</script>
+</body>
+</html>
+
+
+
+
